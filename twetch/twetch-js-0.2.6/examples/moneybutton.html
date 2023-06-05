@@ -1,0 +1,63 @@
+<html>
+	<head>
+		<title>Twetch SDK - MoneyButton</title>
+		<script src="https://unpkg.com/@twetch/sdk@0.1.19/dist/twetch.min.js"></script>
+		<script src="https://www.moneybutton.com/moneybutton.js"></script>
+		<script src="https://unpkg.com/bsv@0.30.0/bsv.min.js"></script>
+	</head>
+	<body>
+		<p>Twetch SDK Moneybutton Example</p>
+		<p>If you havent already, add your monebutton signing address to https://twetch.app/developer - swipe the button below to fetch your signing address.</p>
+		<div id="moneybutton-sign"></div>
+		<p id="signing-address">Signing Address:</p>
+		<p>After adding your signing address you may post from moneybutton</p>
+		<p>Posting: "Hello World from Twetch SDK w/ MoneyButton"</p>
+		<div id="moneybutton-post"></div>
+	</body>
+	<script>
+		init();
+		async function init() {
+			const sdk = new twetchjs();
+			const { abi, payees } = await sdk.build('twetch/post@0.0.1', { bContent: 'Hello World from Twetch SDK w/ MoneyButton' });
+			const outputs = [{
+				currency: 'BSV',
+				amount: 0,
+				script: bsv.Script.buildSafeDataOut(abi.toArray()).toASM()
+			}].concat(payees);
+			const cryptoOperations = [
+				{
+					name: 'myAddress',
+					method: 'address',
+					key: 'identity'
+				},
+				{
+					name: 'mySignature',
+					method: 'sign',
+					data: abi.contentHash(),
+					dataEncoding: 'utf8',
+					key: 'identity',
+					algorithm: 'bitcoin-signed-message'
+				}
+			];
+
+			moneyButton.render(document.getElementById('moneybutton-sign'), {
+				label: 'Signing Address',
+				outputs: [],
+				cryptoOperations,
+				onCryptoOperations: async (cryptoOperations) => {
+					const address = cryptoOperations.find(e => e.name === 'myAddress').value;
+					document.getElementById('signing-address').innerHTML = `Signing Address: ${address}`;
+				}
+			});
+
+			moneyButton.render(document.getElementById('moneybutton-post'), {
+				label: 'Twetch It',
+				outputs,
+				cryptoOperations,
+				onPayment: async (payment) => {
+					await sdk.publishRequest({ signed_raw_tx: payment.rawtx, action: 'twetch/post@0.0.1' });
+				}
+			});
+		}
+	</script>
+</html>

@@ -1,0 +1,99 @@
+#!/usr/bin/env node
+
+const Twetch = require('./dist/twetch.node.min.js');
+const twetch = new Twetch({ filePath: `${__dirname}/.bit` });
+
+require('yargs')
+	.scriptName('twetch')
+	.command('init', 'to get started run this', {}, async argv => {
+		twetch.init();
+	})
+	.command('address', 'display your wallet signing address', {}, async argv => {
+		const address = await twetch.wallet.address();
+		console.log('address: ', address);
+		process.exit();
+	})
+	.command('backup', 'backup your wallet', {}, () => {
+		twetch.wallet.backup();
+	})
+	.command('balance', 'fetch your wallet balance', {}, async argv => {
+		const balance = await twetch.wallet.balance();
+		console.log('balance: ', balance / 100000000, 'BSV');
+		process.exit();
+	})
+	.command(
+		'like',
+		'like a twetch post',
+		yargs =>
+			yargs.option('t', {
+				alias: 'transaction',
+				describe: 'txid of the post to like'
+			}),
+		async argv => {
+			const payload = {
+				postTransaction: argv.transaction
+			};
+
+			const response = await twetch.publish('twetch/like@0.0.1', payload);
+			if (response.published) {
+				console.log(`liked! https://twetch.app/t/${argv.transaction}`);
+			}
+		}
+	)
+	.command(
+		'post',
+		'publish a message on Twetch',
+		yargs =>
+			yargs
+				.option('f', {
+					alias: 'file',
+					describe: 'path of file you want posted to twetch'
+				})
+				.option('c', {
+					alias: 'content',
+					describe: 'content you want posted to twetch'
+				})
+				.option('r', {
+					alias: 'reply',
+					describe: 'txid of post to reply to'
+				})
+				.option('t', {
+					alias: 'tweet',
+					describe: 'tweet from twetch'
+				})
+				.option('h', {
+					alias: 'hide',
+					describe: 'hide tweet from twetch link'
+				}),
+		async argv => {
+			const payload = {
+				bContent: argv.file ? undefined : argv.content,
+				payParams: { tweetFromTwetch: argv.tweet || false, hideTweetFromTwetchLink: argv.hide || false },
+				mapComment: (argv.file && argv.content ? argv.content : '') || '',
+				mapReply: argv.reply || 'null'
+			};
+
+			const response = await twetch.publish('twetch/post@0.0.1', payload, argv.file);
+			if (response.published) {
+				console.log(`published! https://twetch.app/t/${response.txid}`);
+			}
+			process.exit();
+		}
+	)
+	.command(
+		'restore',
+		'restore your wallet',
+		yargs => yargs.option('k', { alias: 'key', describe: 'private key WIF' }),
+		argv => {
+			if (!argv.key) {
+				return console.log('you must specify a private key');
+			}
+
+			twetch.wallet.restore(argv.key);
+			console.log('Wallet restored from private key');
+		}
+	)
+	.command('storage', 'get information about persistant storage', {}, () => {
+		console.log('path', twetch.storage.filePath);
+	})
+	.help().argv;
