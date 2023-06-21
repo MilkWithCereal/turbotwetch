@@ -102,10 +102,6 @@ class twetchAPI {
   {
     return 'APPROVE_ABI';
   }
-  USDFormula()
-  {
-    ;
-  }
 }
 
 async function sendtwetch() {
@@ -127,10 +123,6 @@ async function sendtwetch() {
 
     console.log(response);
     registration = JSON.stringify({response});
-  } catch (error) {
-    // Handle any errors that occurred during the await operation
-    console.error(error);
-    return ''; // or any other appropriate value in case of an error
   }
 }
 
