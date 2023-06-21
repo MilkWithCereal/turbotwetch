@@ -25,7 +25,7 @@ class twetchAPI {
         {
           opcode: 'pay',
           blockType: Scratch.BlockType.COMMAND,
-          text: 'Pay [USD]$ in BSV to [TARGET]',
+          text: 'Pay [USD] sats in BSV to [TARGET]',
           disableMonitor: true,
           arguments:
           {
@@ -114,43 +114,13 @@ async function sendtwetch() {
   resp.paymail.toString();
 }
 
-function calculateSatsValue(args) {
-  const sessionFetch = fetch('https://api.whatsonchain.com/v1/bsv/main/exchangerate')
-    .then((response) => response.json())
-    .then((data) => {
-      const exchangeRate = data.rate;
-      const satsValue = (args.USD * exchangeRate) / 100000000;
-      return Math.floor(satsValue);
-    })
-    .catch((error) => {
-      console.error(error);
-      return 0; // or any other appropriate value in case of an error
-    });
-
-    payexternal(args);
-}
-
-async function payexternal(args) {
-  /*  
-  // Fetch the exchange rate from the API
-    const sessionFetch = await fetch('https://api.whatsonchain.com/v1/bsv/main/exchangerate');
-    const data = await sessionFetch.json();
-
-    // Extract the exchange rate from the response
-    const exchangeRate = data.rate;
-
-    // Calculate the USD value in sats
-    let satsValue = (args.USD * exchangeRate) / 100000000;  // 10 cents equivalent in USD
-    satsValue = Math.floor(satsValue);
-    console.log(satsValue)
-    */
-
+  async function payexternal(args) {
   try {
     const response = await window.twetch.abi({
       contract: 'payment',
       outputs: [{
         to: args.TARGET,
-        sats: satsValue 
+        sats: args.USD 
       }]
     });
 
