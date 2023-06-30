@@ -110,7 +110,7 @@ async function sendtwetch() {
   resp.paymail.toString();
 }
 
-  async function payexternal(args) {
+async function payexternal(args) {
   try {
     const response = await window.twetch.abi({
       contract: 'payment',
@@ -119,6 +119,11 @@ async function sendtwetch() {
         sats: args.USD 
       }]
     });
+  } catch (error) {
+    // Handle the error
+  }
+}
+
 
 
     console.log(response);
