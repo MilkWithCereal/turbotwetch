@@ -53,13 +53,13 @@ class twetchAPI {
           disableMonitor: true
         },
         {
-          opcode: 'Approve',
+          opcode: 'approve',
           blockType: Scratch.BlockType.REPORTER,
           text: 'Approve Response',
           disableMonitor: true
         },
         {
-          opcode: 'Reject',
+          opcode: 'reject',
           blockType: Scratch.BlockType.REPORTER,
           text: 'Reject Response',
           disableMonitor: true
@@ -67,46 +67,47 @@ class twetchAPI {
       ]
     };
   }
-  appcheck()
-  {
-    const isTwetchInstalled = window.bitcoin && window.bitcoin.isTwetch
+  
+  appcheck() {
+    const isTwetchInstalled = window.bitcoin && window.bitcoin.isTwetch;
     return isTwetchInstalled;
   }
-  twetch()
-  {
-    sendtwetch()
+  
+  twetch() {
+    sendtwetch();
   }
-  pay(args)
-  {
+  
+  pay(args) {
     // calculateSatsValue(args)
-    payexternal(args)
+    payexternal(args);
   }
-  status()
-  {
+  
+  status() {
     return registration;
   }
-  post(args)
-  {
-    postexternal(args)
+  
+  post(args) {
+    postexternal(args);
   }
-  clearresponse()
-  {
+  
+  clearresponse() {
     registration = '';
   }
-  Reject()
-  {
+  
+  reject() {
     return 'REJECT_ABI';
   }
-  Approve()
-  {
+  
+  approve() {
     return 'APPROVE_ABI';
   }
 }
 
 async function sendtwetch() {
   const resp = await window.bitcoin.connect();
-  resp.publicKey.toString();
-  resp.paymail.toString();
+  const publicKey = resp.publicKey.toString();
+  const paymail = resp.paymail.toString();
+  // Do something with publicKey and paymail
 }
 
 async function payexternal(args) {
@@ -118,8 +119,10 @@ async function payexternal(args) {
         sats: args.USD 
       }]
     });
+    // Handle the response
   } catch (error) {
     // Handle the error
   }
 }
+
 Scratch.extensions.register(new twetchAPI());
