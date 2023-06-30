@@ -123,14 +123,4 @@ async function payexternal(args) {
     // Handle the error
   }
 }
-
-
-
-    console.log(response);
-    registration = JSON.stringify({response});
-  }
-}
-
-
-
 Scratch.extensions.register(new twetchAPI());
