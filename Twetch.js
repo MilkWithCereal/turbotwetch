@@ -104,10 +104,16 @@ class twetchAPI {
 }
 
 async function sendtwetch() {
+  try {
   const resp = await window.bitcoin.connect();
-  const publicKey = resp.publicKey.toString();
-  const paymail = resp.paymail.toString();
-  // Do something with publicKey and paymail
+  resp.publicKey.toString();
+  // 26qv4GCcx98RihuK3c4T6ozB3J7L6VwCuFVc7Ta2A3Uo
+  resp.paymail.toString();
+  // 1@twetch.me
+} catch (err) {
+  // { code: 4001, message: 'User rejected the request.' }
+}
+
 }
 
 async function payexternal(args) {
