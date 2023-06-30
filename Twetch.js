@@ -72,6 +72,9 @@ class twetchAPI {
   {
     const isTwetchInstalled = window.bitcoin && window.bitcoin.isTwetch
     return isTwetchInstalled;
+    if (!isTwetchInstalled) {
+    catch(error)
+    }
   }
   twetch()
   {
